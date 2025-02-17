@@ -3,7 +3,8 @@ from tkinter import ttk
 
 def handleButtonClick(clickedButtonText):
     currentText = resultVar.get()
-    
+    global prevResultVar
+
     if clickedButtonText == "=":
         try:
             #Replacing the symbols with operators to perform calculations
@@ -13,10 +14,13 @@ def handleButtonClick(clickedButtonText):
             if result.is_integer(): #Check if whole num
                 result = int(result)
 
+            prevResultVar.set(result)
             resultVar.set(result)
         except Exception as e:
             resultVar.set("Error")
-    elif clickedButtonText == "C":
+    elif clickedButtonText == "C": #Clear number
+            #prevResultVar = float(currentText) #Getting current value
+            #print(prevResultVar) #Test
             resultVar.set("")
     elif clickedButtonText == "%":
             #Convert to decimal
@@ -31,6 +35,10 @@ def handleButtonClick(clickedButtonText):
             resultVar.set(-currentNumber)
         except ValueError:
             resultVar.set("Error")
+    elif clickedButtonText == "ANS": #Replacing with previous answer
+         prevAnswer = prevResultVar.get()
+         if prevAnswer:
+              resultVar.set(prevAnswer)
     else:
         resultVar.set(currentText + clickedButtonText)
 
@@ -49,8 +57,12 @@ buttons = [
     ("7", 2, 0), ("8", 2, 1), ("9", 2, 2), ("x", 2, 3),
     ("4", 3, 0), ("5", 3, 1), ("6", 3, 2), ("-", 3, 3),
     ("1", 4, 0), ("2", 4, 1), ("3", 4, 2), ("+", 4, 3),
-    ("0", 5, 0, 2), (".", 5, 2), ("=", 5, 3)
+    ("ANS", 5, 0),("0", 5, 1), (".", 5, 2), ("=", 5, 3)
     ]
+
+prevResultVar = tk.StringVar()
+test = ttk.Label(root, textvariable=prevResultVar, font=("Helvetica", 12), justify="left")
+test.grid(row=6, column=0, columnspan=4,sticky="nsew")
 
 #Configure style
 style = ttk.Style()
@@ -72,8 +84,8 @@ for i in range(4):
     root.grid_columnconfigure(i, weight=1)
 
 #Set window size
-width = 500
-height = 700
+width = 1000
+height = 800
 root.geometry(f"{width}x{height}")
 root.resizable(False,False) #Make window not resizable
 
